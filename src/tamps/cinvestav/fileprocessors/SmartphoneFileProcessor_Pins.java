@@ -20,11 +20,12 @@ public class SmartphoneFileProcessor_Pins {
     private FileReader fileReader;
     private Document dom;
 
-    private final int LATITUDE = 0;
-    private final int LONGITUDE = 1;
-    private final int ACCURACY = 2;
+    private final int LATITUDE = 1;
+    private final int LONGITUDE = 2;
     private final int ALTITUDE = 3;
-    private final int TIMESTAMP = 4;
+    private final int ACCURACY = 4;
+    private final int SPEED = 5;
+    private final int TIMESTAMP = 6;
 
     public SmartphoneFileProcessor_Pins(String fileInputName, String fileOutputname) throws FileNotFoundException {
         this.fileInputName = fileInputName;
@@ -32,7 +33,7 @@ public class SmartphoneFileProcessor_Pins {
         fileReader = new FileReader(this.fileInputName);
     }
 
-        public void translateToKMLPins() throws IOException, ParserConfigurationException, TransformerException {
+    public void translateToKMLPins() throws IOException, ParserConfigurationException, TransformerException {
         prepareDomPreamble();
 
         BufferedReader br = new BufferedReader(fileReader);
@@ -85,7 +86,8 @@ public class SmartphoneFileProcessor_Pins {
     }
 
     private Element createTimestampElement(String timestamp) {
-        SimpleDateFormat dateFormatInFile = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+//        SimpleDateFormat dateFormatInFile = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+        SimpleDateFormat dateFormatInFile = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
         SimpleDateFormat dateFormatInKML = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
         Element timestampElement = dom.createElement("TimeStamp");
@@ -98,6 +100,7 @@ public class SmartphoneFileProcessor_Pins {
             timestampElement.appendChild(whenElement);
         } catch (ParseException e) {
             e.printStackTrace();
+            throw new RuntimeException("I couldn't parse the timestamp. Also I hate checked exceptions");
         }
         return timestampElement;
     }
@@ -141,4 +144,5 @@ public class SmartphoneFileProcessor_Pins {
         tr.transform(new DOMSource(dom),
                 new StreamResult(new FileOutputStream(fileOutputName)));
     }
+
 }
